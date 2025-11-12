@@ -3,71 +3,242 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Map Ranking — GBP Heatmap Comparison Report (HTML App)</title>
+  <title>Map Ranking — GBP Heatmap Comparison Report</title>
   <style>
-    :root{
-      --brand-black:#000000;
-      --brand-gray:#1a1a1a;
-      --ink:#000000;
-      --muted:#555555;
-      --bg:#F8FAFC;
-      --card:#FFFFFF;
+    :root {
+      --royal-black: #000000;
+      --royal-dark: #111111;
+      --muted: #555555;
+      --white: #ffffff;
+      --card-border: #e5e7eb;
     }
 
-    body{
-      margin:0;
-      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:linear-gradient(180deg,#fff,#f0f0f0);
-      color:var(--ink);
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--white);
+      color: var(--royal-black);
     }
 
-    .app{max-width:1200px;margin:32px auto;padding:0 16px 64px;}
+    .app {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px 64px;
+    }
 
-    .brandbar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,0.06)}
-    h1{font-size:20px;margin:0;font-weight:700;color:var(--brand-black)}
-    .subtitle{color:var(--muted);font-size:13px}
+    /* Header */
+    .brandbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--royal-black), var(--royal-dark));
+      color: var(--white);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
 
-    .controls{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .card{background:var(--card);border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05)}
-    .fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"],input[type="month"],textarea{width:100%;border:1px solid #ccc;border-radius:12px;padding:10px 12px;font:inherit;background:white}
-    textarea{min-height:76px;resize:vertical}
+    .brandbar img {
+      height: 55px;
+      width: auto;
+    }
 
-    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .btn{border:none;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;transition:0.2s all}
-    .btn-primary{background:var(--brand-black);color:white}
-    .btn-outline{background:white;border:1px solid var(--brand-black);color:var(--brand-black)}
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
 
-    .pages{margin-top:18px;display:grid;gap:16px}
+    .brand-text h1 {
+      font-size: 22px;
+      margin: 0;
+      font-weight: 700;
+    }
 
-    .report-page{background:var(--card);border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06)}
-    .page-header{padding:14px 16px;background:var(--brand-black);color:white;display:flex;justify-content:space-between;align-items:center}
-    .page-title{font-weight:700}
+    .brand-text .subtitle {
+      color: #ddd;
+      font-size: 13px;
+    }
 
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .panel{border:1px dashed #cbd5e1;border-radius:14px;padding:10px;background:#fbfdff}
-    .panel h4{margin:2px 0 8px;font-size:12px;color:var(--muted)}
+    /* Controls */
+    .controls {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
 
-    .dropzone{position:relative;border:2px dashed #cfe2ff;border-radius:12px;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden;background:white}
-    .dropzone.dragover{border-color:var(--brand-black);}
-    .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .dropzone .placeholder{font-size:12px;color:#94a3b8;text-align:center;padding:12px}
-    .dropzone img{max-width:100%;max-height:100%;object-fit:contain}
+    .card {
+      background: var(--white);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
 
-    .summary{margin-top:12px}
-    .page-footer{margin-top:14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eef2ff;padding-top:10px}
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: block;
+    }
 
-    .brandline{height:4px;background:var(--brand-black);border-radius:999px}
-    .brand-footer{font-size:11px;color:#333333}
+    input[type="text"], input[type="month"], textarea {
+      width: 100%;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px;
+      font: inherit;
+      background: white;
+    }
 
-    @media print{body{background:white}.controls,.brandbar,.toolbar{display:none}.report-page{page-break-after:always;border:none;box-shadow:none}}
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--royal-black), var(--royal-dark));
+      color: white;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--royal-black);
+      color: var(--royal-black);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* Pages */
+    .pages {
+      margin-top: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .report-page {
+      background: var(--white);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .page-header {
+      background: var(--royal-black);
+      color: var(--white);
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .panel {
+      border: 1px dashed #bbb;
+      border-radius: 12px;
+      background: #fafafa;
+      padding: 10px;
+    }
+
+    .panel h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dropzone {
+      position: relative;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      aspect-ratio: 4/3;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: white;
+    }
+
+    .dropzone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .dropzone img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .dropzone .placeholder {
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .summary {
+      padding: 0 16px 16px;
+    }
+
+    .page-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      color: var(--muted);
+      background: #fafafa;
+    }
+
+    .brandline {
+      height: 4px;
+      background: var(--royal-black);
+      margin-top: 40px;
+      border-radius: 999px;
+    }
+
+    @media print {
+      body { background: white; }
+      .controls, .toolbar { display: none !important; }
+      .report-page { page-break-after: always; border: none; box-shadow: none; }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="brandbar">
-      <div>
+      <img src="12.PNG" alt="Map Ranking logo" />
+      <div class="brand-text">
         <h1>Map Ranking — GBP Heatmap Comparison Report</h1>
         <div class="subtitle">Auto-populate two scans per page (Previous vs Current). Export as PDF/email-ready.</div>
       </div>
@@ -92,7 +263,7 @@
         <div class="row" style="margin-top:12px">
           <button class="btn btn-outline" id="bulkUploadBtn">Bulk Upload Screenshots</button>
           <input id="bulkInput" type="file" accept="image/*" multiple hidden />
-          <span style="font-size:12px;color:var(--muted)">Use filenames with <strong>_prev</strong> and <strong>_curr</strong> for auto pairing.</span>
+          <span style="font-size:12px;color:var(--muted)">Use filenames with <strong>_prev</strong> and <strong>_curr</strong> for pairing.</span>
         </div>
       </div>
 
@@ -109,55 +280,74 @@
     </div>
 
     <div class="pages" id="pages"></div>
-    <div class="toolbar" style="margin-top:20px"><div class="brandline"></div></div>
+    <div class="brandline"></div>
   </div>
 
   <script>
-    const $=(sel,ctx=document)=>ctx.querySelector(sel);
-    const byId=id=>document.getElementById(id);
+    const byId = id => document.getElementById(id);
 
-    function makePage(keyword='[Keyword]'){
+    function makePage(keyword = '[Keyword]') {
       const includeSummary = byId('includeSummary').checked;
-      const page=document.createElement('section');
-      page.className='report-page';
-      page.innerHTML=`
-        <div class="page-header"><div><div class="page-title">GBP Heatmap — ${keyword}</div></div></div>
+      const page = document.createElement('section');
+      page.className = 'report-page';
+      page.innerHTML = `
+        <div class="page-header">
+          <div class="page-title">GBP Heatmap — ${keyword}</div>
+          <div>${new Date().toLocaleDateString()}</div>
+        </div>
         <div class="page-body">
           <div class="grid-2">
-            <div class="panel"><h4>Previous Month</h4><div class="dropzone" data-role="prev"><input type="file" accept="image/*" /><div class="placeholder">Drop or click to upload previous scan</div></div></div>
-            <div class="panel"><h4>Current Month</h4><div class="dropzone" data-role="curr"><input type="file" accept="image/*" /><div class="placeholder">Drop or click to upload current scan</div></div></div>
+            <div class="panel">
+              <h4>Previous Month</h4>
+              <div class="dropzone" data-role="prev">
+                <input type="file" accept="image/*" />
+                <div class="placeholder">Drop or click to upload previous scan</div>
+              </div>
+            </div>
+            <div class="panel">
+              <h4>Current Month</h4>
+              <div class="dropzone" data-role="curr">
+                <input type="file" accept="image/*" />
+                <div class="placeholder">Drop or click to upload current scan</div>
+              </div>
+            </div>
           </div>
-          ${includeSummary ? '<div class="summary"><label>Summary / Notes</label><textarea placeholder="3–5 sentences on ranking changes"></textarea></div>' : ''}
-          <div class="page-footer"><div class="brand-footer">Map Ranking — Local SEO | GBP Optimization | Review & Lead Automation</div></div>
+          ${includeSummary ? `<div class="summary">
+            <label>Summary / Notes</label>
+            <textarea placeholder="3–5 sentences on ranking changes or progress."></textarea>
+          </div>` : ''}
+          <div class="page-footer">
+            Map Ranking — Local SEO | GBP Optimization | Review & Lead Automation
+          </div>
         </div>`;
       return page;
     }
 
-    function toggleSummaries(show){
-      document.querySelectorAll('.report-page').forEach(page=>{
+    function toggleSummaries(show) {
+      document.querySelectorAll('.report-page').forEach(page => {
         const existing = page.querySelector('.summary');
-        if(show && !existing){
+        if (show && !existing) {
           const summary = document.createElement('div');
-          summary.className='summary';
-          summary.innerHTML='<label>Summary / Notes</label><textarea placeholder="3–5 sentences on ranking changes"></textarea>';
-          page.querySelector('.page-body').insertBefore(summary,page.querySelector('.page-footer'));
-        } else if(!show && existing){
+          summary.className = 'summary';
+          summary.innerHTML = '<label>Summary / Notes</label><textarea placeholder="3–5 sentences on ranking changes or progress."></textarea>';
+          page.querySelector('.page-body').appendChild(summary);
+        } else if (!show && existing) {
           existing.remove();
         }
       });
     }
 
-    function init(){
+    function init() {
       byId('pages').appendChild(makePage());
-      byId('addPage').addEventListener('click',()=>{
+      byId('addPage').addEventListener('click', () => {
         byId('pages').appendChild(makePage());
       });
-      byId('printBtn').addEventListener('click',()=>window.print());
-      byId('exportPdf').addEventListener('click',()=>window.print());
-      byId('includeSummary').addEventListener('change',e=>toggleSummaries(e.target.checked));
+      byId('printBtn').addEventListener('click', () => window.print());
+      byId('exportPdf').addEventListener('click', () => window.print());
+      byId('includeSummary').addEventListener('change', e => toggleSummaries(e.target.checked));
     }
 
-    document.addEventListener('DOMContentLoaded',init);
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

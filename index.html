@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Map Ranking — GBP Heatmap Comparison Report (HTML App)</title>
+  <style>
+    :root{
+      --brand-sky:#1E90FF; /* Sky Blue */
+      --brand-pink:#FF1493; /* Fuchsia */
+      --brand-navy:#001F3F; /* Navy */
+      --ink:#111827; /* gray-900 */
+      --muted:#6B7280; /* gray-500 */
+      --bg:#F8FAFC; /* slate-50 */
+      --card:#FFFFFF;
+      --ring:#93C5FD;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+      background:linear-gradient(180deg, #fff, #f6f9ff 35%, #fff);
+      color:var(--ink);
+    }
+    /* App Shell */
+    .app{max-width:1200px; margin:32px auto; padding:0 16px 64px;}
+    .brandbar{display:flex; align-items:center; gap:16px; padding:12px 16px; border:1px solid #e5e7eb; border-radius:16px; background:var(--card); box-shadow:0 8px 24px rgba(0,0,0,0.06)}
+    .parrot{width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--brand-sky),var(--brand-pink)); display:grid; place-items:center; color:white; font-weight:800;}
+    h1{font-size:20px; margin:0;}
+    .subtitle{color:var(--muted); font-size:13px}
+
+    /* Controls */
+    .controls{margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    .card{background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.05)}
+    .fields{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input[type="text"], input[type="month"], textarea{width:100%; border:1px solid #e5e7eb; border-radius:12px; padding:10px 12px; font:inherit; background:white}
+    textarea{min-height:76px; resize:vertical}
+    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:600; cursor:pointer; transition:.2s transform ease, .2s box-shadow ease;}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:linear-gradient(135deg,var(--brand-sky), var(--brand-pink)); color:white; box-shadow:0 8px 18px rgba(30,144,255,.25)}
+    .btn-outline{background:white; border:1px solid var(--brand-sky); color:var(--brand-sky)}
+    .hint{font-size:12px; color:var(--muted)}
+
+    /* Pages container */
+    .pages{margin-top:18px; display:grid; gap:16px}
+
+    /* Single Report Page (screen view) */
+    .report-page{background:var(--card); border:1px solid #e5e7eb; border-radius:18px; overflow:hidden; box-shadow:0 12px 36px rgba(0,0,0,0.06)}
+    .page-header{padding:14px 16px; background:linear-gradient(90deg,var(--brand-navy), var(--brand-sky) 60%, var(--brand-pink)); color:white; display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .page-title{font-weight:700; letter-spacing:.3px}
+    .meta{font-size:12px; opacity:.95}
+    .page-body{padding:14px 16px 16px}
+
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .panel{border:1px dashed #cbd5e1; border-radius:14px; padding:10px; background:#fbfdff}
+    .panel h4{margin:2px 0 8px; font-size:12px; color:var(--muted)}
+
+    .dropzone{position:relative; border:2px dashed #cfe2ff; border-radius:12px; aspect-ratio:4/3; display:grid; place-items:center; overflow:hidden; background:white}
+    .dropzone.dragover{border-color:var(--brand-sky); box-shadow:inset 0 0 0 2px var(--ring)}
+    .dropzone input{position:absolute; inset:0; opacity:0; cursor:pointer}
+    .dropzone .placeholder{font-size:12px; color:#94a3b8; text-align:center; padding:12px}
+    .dropzone img{max-width:100%; max-height:100%; object-fit:contain}
+
+    .summary{margin-top:12px}
+
+    .page-footer{margin-top:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid #eef2ff; padding-top:10px}
+    .brandline{height:4px; background:linear-gradient(90deg,var(--brand-sky), var(--brand-pink)); border-radius:999px}
+    .brand-footer{font-size:11px; color:#64748b}
+
+    /* Print styles (Letter landscape) */
+    @media print {
+      body{background:white}
+      .controls, .brandbar, .toolbar{display:none !important}
+      .report-page{page-break-after:always; border:none; box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="brandbar">
+      <div class="parrot" aria-hidden="true">PR</div>
+      <div>
+        <h1>Map Ranking — GBP Heatmap Comparison Report</h1>
+        <div class="subtitle">Auto-populate two scans per page (Previous vs Current). Export as PDF/email-ready.</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="card">
+        <div class="fields">
+          <div>
+            <label for="client">Client Name</label>
+            <input id="client" type="text" placeholder="e.g., Aladdin Doors — Minneapolis" />
+          </div>
+          <div>
+            <label for="month">Report Month</label>
+            <input id="month" type="month" />
+          </div>
+          <div>
+            <label for="manager">Account Manager</label>
+            <input id="manager" type="text" value="Francisco Quintero" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn btn-outline" id="bulkUploadBtn">Bulk Upload Screenshots</button>
+          <input id="bulkInput" type="file" accept="image/*" multiple hidden />
+          <span class="hint">Bulk upload pairs using names like <strong>garage-repair_prev.png</strong> and <strong>garage-repair_current.png</strong>. Supported tokens: <em>prev, previous, old</em> vs <em>curr, current, new</em>.</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <button class="btn btn-outline" id="addPage">+ Add Page</button>
+          <button class="btn btn-primary" id="exportPdf">Export PDF</button>
+          <button class="btn btn-outline" id="printBtn" title="Use browser print to save as PDF">Print to PDF</button>
+        </div>
+        <div class="hint" style="margin-top:10px">
+          Each page compares one keyword. Drop screenshots onto the placeholders or use Bulk Upload to auto-match by filename.
+        </div>
+      </div>
+    </div>
+
+    <div class="pages" id="pages"></div>
+
+    <div class="toolbar" style="margin-top:20px">
+      <div class="brandline"></div>
+    </div>
+  </div>
+
+  <!-- jsPDF + html2canvas (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    // =============== Utilities ===============
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+    const byId = id => document.getElementById(id);
+
+    function monthLabel() {
+      const v = byId('month').value;
+      if (!v) return '';
+      const [y,m] = v.split('-');
+      return new Date(Number(y), Number(m)-1, 1).toLocaleDateString(undefined,{month:'long', year:'numeric'});
+    }
+
+    function makePage({keyword='[Keyword]', prevSrc='', currSrc='', summary=''}={}) {
+      const page = document.createElement('section');
+      page.className = 'report-page';
+      page.innerHTML = `
+        <div class="page-header">
+          <div>
+            <div class="page-title">GBP Heatmap Comparison — <span class="kw">${keyword}</span></div>
+            <div class="meta"><span class="client">${byId('client').value||'[Client]'}</span> • <span class="month">${monthLabel()||'[Month]'}</span> • Manager: <span class="mgr">${byId('manager').value||'—'}</span></div>
+          </div>
+          <div style="font-size:12px; opacity:.95">Map Ranking LLC</div>
+        </div>
+        <div class="page-body">
+          <div class="grid-2">
+            <div class="panel">
+              <h4>Previous Month</h4>
+              <div class="dropzone" data-role="prev">
+                <input type="file" accept="image/*" />
+                ${prevSrc ? `<img alt="Previous heatmap" src="${prevSrc}">` : `<div class="placeholder">Drop or click to upload previous scan</div>`}
+              </div>
+            </div>
+            <div class="panel">
+              <h4>Current Month</h4>
+              <div class="dropzone" data-role="curr">
+                <input type="file" accept="image/*" />
+                ${currSrc ? `<img alt="Current heatmap" src="${currSrc}">` : `<div class="placeholder">Drop or click to upload current scan</div>`}
+              </div>
+            </div>
+          </div>
+          <div class="summary">
+            <label>Summary / Notes</label>
+            <textarea placeholder="3–5 sentences on changes, improvements, and next actions.">${summary}</textarea>
+          </div>
+          <div class="page-footer">
+            <div class="brand-footer">Map Ranking — Local SEO | GBP Optimization | Review & Lead Automation • support@mapranking.com</div>
+            <div class="row">
+              <input class="kw-input" type="text" value="${keyword}" aria-label="Keyword" style="width:220px" />
+              <button class="btn btn-outline sm remove">Remove Page</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // wire up keyword live binding
+      const kwSpan = $('.kw', page);
+      const kwInput = $('.kw-input', page);
+      kwInput.addEventListener('input', ()=> kwSpan.textContent = kwInput.value || '[Keyword]');
+
+      // wire up client/month/manager live bindings
+      ['client','manager','month'].forEach(id => byId(id).addEventListener('input', ()=>{
+        $('.client', page).textContent = byId('client').value || '[Client]';
+        $('.mgr', page).textContent = byId('manager').value || '—';
+        $('.month', page).textContent = monthLabel() || '[Month]';
+      }));
+
+      // handle removal
+      $('.remove', page).addEventListener('click', ()=> page.remove());
+
+      // dropzones
+      $$('.dropzone', page).forEach(zone => {
+        const input = $('input[type=file]', zone);
+        const role = zone.dataset.role; // prev | curr
+        input.addEventListener('change', ev => loadFileToZone(ev.target.files[0], zone));
+        ['dragenter','dragover'].forEach(evt => zone.addEventListener(evt, e=>{e.preventDefault(); zone.classList.add('dragover')}));
+        ['dragleave','drop'].forEach(evt => zone.addEventListener(evt, e=>{e.preventDefault(); zone.classList.remove('dragover')}));
+        zone.addEventListener('drop', e=>{
+          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+          if (file) loadFileToZone(file, zone);
+        });
+      });
+
+      return page;
+    }
+
+    function loadFileToZone(file, zone){
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        zone.innerHTML = `<input type="file" accept="image/*" />`;
+        const img = new Image();
+        img.alt = zone.dataset.role === 'prev' ? 'Previous heatmap' : 'Current heatmap';
+        img.src = reader.result;
+        zone.appendChild(img);
+        // rebind input
+        const input = $('input[type=file]', zone);
+        input.addEventListener('change', ev => loadFileToZone(ev.target.files[0], zone));
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // =============== Bulk Upload Logic ===============
+    function normalizeToken(s){
+      const n = s.toLowerCase();
+      if (/prev|previous|old|before/.test(n)) return 'prev';
+      if (/curr|current|now|new|after/.test(n)) return 'curr';
+      return '';
+    }
+
+    function baseKeywordFromName(name){
+      const base = name.replace(/\.[^.]+$/, ''); // no extension
+      const parts = base.split(/[_\-\s]+/);
+      // remove trailing tokens that indicate prev/curr
+      const filtered = parts.filter(p => !/^(prev|previous|old|before|curr|current|now|new)$/i.test(p));
+      return filtered.join('-').trim() || 'keyword';
+    }
+
+    function handleBulk(files){
+      // group by base keyword, then assign prev/curr by token
+      const groups = {};
+      Array.from(files).forEach(f => {
+        const token = normalizeToken(f.name);
+        const key = baseKeywordFromName(f.name);
+        if (!groups[key]) groups[key] = {prev:null, curr:null};
+        if (token === 'prev' && !groups[key].prev) groups[key].prev = f;
+        else if (token === 'curr' && !groups[key].curr) groups[key].curr = f;
+        else {
+          // if no clear token, guess by modified time: older→prev, newer→curr (fallback)
+          const slot = (!groups[key].prev) ? 'prev' : (!groups[key].curr ? 'curr' : null);
+          if (slot) groups[key][slot] = f; // may be imperfect but helpful
+        }
+      });
+
+      const container = byId('pages');
+      const entries = Object.entries(groups);
+      if (!entries.length){
+        alert('No recognizable files. Use names containing prev/previous or curr/current.');
+        return;
+      }
+
+      // For each group, create a page and place images
+      entries.forEach(([kw, pair]) => {
+        const page = makePage({keyword:kw});
+        container.appendChild(page);
+        if (pair.prev) loadFileToZone(pair.prev, $('[data-role="prev"]', page));
+        if (pair.curr) loadFileToZone(pair.curr, $('[data-role="curr"]', page));
+      });
+      scrollTo(0, document.body.scrollHeight);
+    }
+
+    // =============== Export PDF ===============
+    async function exportPDF(){
+      const { jsPDF } = window.jspdf;
+      const pages = $$('.report-page');
+      if (!pages.length){ alert('Add at least one page before exporting.'); return; }
+
+      // Letter landscape: 279.4mm x 215.9mm => 792 x 612 pt at 72dpi
+      const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'letter'});
+
+      for (let i=0; i<pages.length; i++){
+        const page = pages[i];
+        const canvas = await html2canvas(page, {scale:2, backgroundColor:'#ffffff'});
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        // Fit image to page while preserving aspect
+        const imgW = canvas.width; const imgH = canvas.height;
+        const ratio = Math.min(pageWidth/imgW, pageHeight/imgH);
+        const w = imgW * ratio; const h = imgH * ratio;
+        const x = (pageWidth - w)/2; const y = (pageHeight - h)/2;
+
+        if (i>0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', x, y, w, h);
+      }
+
+      const client = byId('client').value || 'Client';
+      const month = monthLabel() || 'Month';
+      const fileName = `${client.replace(/[^\w\-]+/g,'_')}_GBP_Heatmap_Report_${month.replace(/\s+/g,'_')}.pdf`;
+      pdf.save(fileName);
+    }
+
+    // =============== Init ===============
+    function init(){
+      // prefill month now
+      const now = new Date();
+      byId('month').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+      // at least one starter page
+      byId('pages').appendChild(makePage({}));
+
+      byId('addPage').addEventListener('click', ()=>{
+        byId('pages').appendChild(makePage({}));
+        scrollTo(0, document.body.scrollHeight);
+      });
+
+      byId('exportPdf').addEventListener('click', exportPDF);
+      byId('printBtn').addEventListener('click', ()=> window.print());
+
+      // bulk upload
+      byId('bulkUploadBtn').addEventListener('click', ()=> byId('bulkInput').click());
+      byId('bulkInput').addEventListener('change', e=> handleBulk(e.target.files));
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -6,12 +6,10 @@
   <title>Map Ranking — GBP Heatmap Comparison Report (HTML App)</title>
   <style>
     :root{
-      --brand-green:#34A853;
-      --brand-blue:#4285F4;
-      --brand-yellow:#FBBC05;
-      --brand-red:#EA4335;
-      --ink:#202124;
-      --muted:#5f6368;
+      --brand-black:#000000;
+      --brand-gray:#1a1a1a;
+      --ink:#000000;
+      --muted:#555555;
       --bg:#F8FAFC;
       --card:#FFFFFF;
     }
@@ -19,33 +17,32 @@
     body{
       margin:0;
       font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:linear-gradient(180deg,#fff,#f8f9fa);
+      background:linear-gradient(180deg,#fff,#f0f0f0);
       color:var(--ink);
     }
 
     .app{max-width:1200px;margin:32px auto;padding:0 16px 64px;}
 
     .brandbar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:16px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,0.06)}
-    .brand-logo img{height:50px;}
-    h1{font-size:20px;margin:0;font-weight:700;color:var(--brand-blue)}
+    h1{font-size:20px;margin:0;font-weight:700;color:var(--brand-black)}
     .subtitle{color:var(--muted);font-size:13px}
 
     .controls{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .card{background:var(--card);border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05)}
     .fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"],input[type="month"],textarea{width:100%;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font:inherit;background:white}
+    input[type="text"],input[type="month"],textarea{width:100%;border:1px solid #ccc;border-radius:12px;padding:10px 12px;font:inherit;background:white}
     textarea{min-height:76px;resize:vertical}
 
     .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .btn{border:none;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;transition:0.2s all}
-    .btn-primary{background:linear-gradient(135deg,var(--brand-blue),var(--brand-green));color:white}
-    .btn-outline{background:white;border:1px solid var(--brand-blue);color:var(--brand-blue)}
+    .btn-primary{background:var(--brand-black);color:white}
+    .btn-outline{background:white;border:1px solid var(--brand-black);color:var(--brand-black)}
 
     .pages{margin-top:18px;display:grid;gap:16px}
 
     .report-page{background:var(--card);border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06)}
-    .page-header{padding:14px 16px;background:linear-gradient(90deg,var(--brand-green),var(--brand-yellow),var(--brand-blue));color:white;display:flex;justify-content:space-between;align-items:center}
+    .page-header{padding:14px 16px;background:var(--brand-black);color:white;display:flex;justify-content:space-between;align-items:center}
     .page-title{font-weight:700}
 
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -53,7 +50,7 @@
     .panel h4{margin:2px 0 8px;font-size:12px;color:var(--muted)}
 
     .dropzone{position:relative;border:2px dashed #cfe2ff;border-radius:12px;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden;background:white}
-    .dropzone.dragover{border-color:var(--brand-blue);}
+    .dropzone.dragover{border-color:var(--brand-black);}
     .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
     .dropzone .placeholder{font-size:12px;color:#94a3b8;text-align:center;padding:12px}
     .dropzone img{max-width:100%;max-height:100%;object-fit:contain}
@@ -61,8 +58,8 @@
     .summary{margin-top:12px}
     .page-footer{margin-top:14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eef2ff;padding-top:10px}
 
-    .brandline{height:4px;background:linear-gradient(90deg,var(--brand-green),var(--brand-yellow),var(--brand-blue));border-radius:999px}
-    .brand-footer{font-size:11px;color:#64748b}
+    .brandline{height:4px;background:var(--brand-black);border-radius:999px}
+    .brand-footer{font-size:11px;color:#333333}
 
     @media print{body{background:white}.controls,.brandbar,.toolbar{display:none}.report-page{page-break-after:always;border:none;box-shadow:none}}
   </style>
@@ -70,7 +67,6 @@
 <body>
   <div class="app">
     <div class="brandbar">
-      <div class="brand-logo"><img src="600d257f-b598-4339-a92e-e3a6930f59ec.png" alt="Map Ranking logo"></div>
       <div>
         <h1>Map Ranking — GBP Heatmap Comparison Report</h1>
         <div class="subtitle">Auto-populate two scans per page (Previous vs Current). Export as PDF/email-ready.</div>
